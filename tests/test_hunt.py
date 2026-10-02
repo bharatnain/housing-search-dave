@@ -126,3 +126,43 @@ def test_decide_pursue(store, capsys):
     conn.commit()
     hunt.cmd_decide("1003", "pursue")
     assert rows("SELECT stage FROM pipeline")[0]["stage"] == "viewing"
+
+
+def test_relisted_unit_takes_new_id(store, capsys):
+    sweep(store, capsys, SOLO, "2026-10-01T10:00")
+    hunt.cmd_decide("1001", "pursue")
+    page = json.loads(PAGE.read_text())
+    page["listings"][0]["id"] = 9999
+    page["listings"][0]["price"] = 2600
+    p = store / "relist.json"
+    p.write_text(json.dumps(page))
+    for day in ("2026-10-02T10:00", "2026-10-03T10:00"):
+        capsys.readouterr()
+        hunt.cmd_import_sweep(day, [str(p)], SOLO)
+        out = json.loads(capsys.readouterr().out)
+        assert "9999" not in {n["id"] for n in out["new"]}
+    assert rows("SELECT price FROM listings WHERE id='9999'")[0]["price"] == 2600
+    assert rows("SELECT COUNT(*) n FROM listings WHERE id='1001'")[0]["n"] == 0
+    assert rows("SELECT listing_ref FROM pipeline")[0]["listing_ref"] == "9999"
+
+
+def test_gone_unit_back_is_new(store, capsys):
+    sweep(store, capsys, SOLO, "2026-10-01T10:00")
+    sweep(store, capsys, SOLO, "2026-10-02T10:00", listings=["1002"], total=1)
+    assert status("1001")["status"] == "gone"
+    out = sweep(store, capsys, SOLO, "2026-10-03T10:00")
+    assert "1001" in {n["id"] for n in out["new"]} and status("1001")["status"] == "active"
+
+
+def test_score_uses_given_weights_without_store(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(hunt, "DB", tmp_path / "hunt.db")   # never created
+    w = tmp_path / "draft.json"
+    w.write_text(json.dumps({"views_each": 3}))
+    hunt.cmd_score(str(FIXTURES / "details-1001.json"), str(w))
+    assert json.loads(capsys.readouterr().out)["score"] == 4.5
+    assert not (tmp_path / "hunt.db").exists()
+
+
+def test_inline_json_rows(store, capsys):
+    hunt.cmd_seed_pipeline('[{"address": "1 Main St", "unit": "2A", "stage": "shortlisted"}]')
+    assert rows("SELECT stage FROM pipeline")[0]["stage"] == "shortlisted"

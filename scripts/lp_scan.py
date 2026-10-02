@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Listings Project weekly scan: fetch all NYC real-estate listings, keep the lease fits.
 
-Usage: python3 scripts/lp_scan.py [out.json]
+Usage: .venv/bin/python scripts/lp_scan.py [out.json]
 Keeps Apartments for Rent / Lease Takeover within profile.yaml bedrooms and gross rent.
-Writes data/lp-<date>.json, an array for: python3 scripts/hunt.py add-listings <file>
+Writes data/lp-<date>.json, an array for: .venv/bin/python scripts/hunt.py add-listings <file>
 """
 import json
 import re

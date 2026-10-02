@@ -5,7 +5,7 @@ Targets: pipeline rows in viewing/replied/inquired/applying/applied/shortlisted,
 listings the dashboard shows (top-ranked, latest new matches, other-portal rows with a
 street address). Skips buildings vetted within MAX_AGE_DAYS unless --force.
 
-Usage: python3 scripts/vet_pipeline.py [--force] [--only "<address>"]
+Usage: .venv/bin/python scripts/vet_pipeline.py [--force] [--only "<address>"]
 """
 import json
 import re
@@ -70,7 +70,7 @@ def targets(conn, prof):
     if sweep:
         for r in conn.execute("SELECT l.address FROM events e JOIN listings l ON l.id=e.listing_id WHERE e.at=? AND e.kind='appeared' AND l.status='active'", (sweep[0],)):
             out.append(r[0])
-    for r in conn.execute("SELECT address FROM listings WHERE status='active' AND source NOT IN ('streeteasy','openigloo') AND net_effective<=?", (cap,)):
+    for r in conn.execute("SELECT address FROM listings WHERE status='active' AND source!='streeteasy' AND net_effective<=?", (cap,)):
         out.append(r[0])
     seen, uniq = set(), []
     for a in out:
@@ -87,7 +87,8 @@ def main():
     conn.execute("""CREATE TABLE IF NOT EXISTS vets (address TEXT PRIMARY KEY, ran_at TEXT, bbl TEXT, bin TEXT,
         matched TEXT, grade TEXT, summary TEXT, flags TEXT, dossier TEXT)""")
     cutoff = (datetime.now(timezone.utc) - timedelta(days=MAX_AGE_DAYS)).isoformat()
-    addrs = [only] if only else targets(conn, doorman_profile.load())
+    prof = doorman_profile.load()
+    addrs = [only] if only else targets(conn, prof)
     done = skipped = failed = 0
     for a in addrs:
         row = conn.execute("SELECT ran_at, grade FROM vets WHERE address=?", (a,)).fetchone()
@@ -95,7 +96,8 @@ def main():
             skipped += 1
             continue
         try:
-            d = apply_se_units(conn, a, vet(a))
+            ll = conn.execute("SELECT lat, lon FROM listings WHERE address=? AND lat IS NOT NULL", (a,)).fetchone()
+            d = apply_se_units(conn, a, vet(a, prof["search"]["boroughs"], tuple(ll) if ll else None))
         except Exception as e:
             d = {"error": str(e)}
         now = datetime.now(timezone.utc).isoformat(timespec="seconds")

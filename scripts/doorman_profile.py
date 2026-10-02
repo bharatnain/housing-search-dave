@@ -3,7 +3,7 @@
 
 Every script calls load(); nothing else hardcodes a search criterion.
 
-Usage: python3 scripts/doorman_profile.py check [path]   # prints problems, exit 1 if any
+Usage: .venv/bin/python scripts/doorman_profile.py check [path]   # prints problems, exit 1 if any
 """
 import datetime as dt
 import os

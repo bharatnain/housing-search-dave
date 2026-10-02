@@ -8,12 +8,12 @@ guard-tick before each MCP call and guard-block after a block, so neither path r
 around the other.
 
 Usage:
-  python3 scripts/se_api.py sweep [--out-dir data/sweep-pages]      # all pages -> page files, prints paths
-  python3 scripts/se_api.py search --page N [--per-page 100] [--out FILE]
-  python3 scripts/se_api.py details <id> [<id> ...]                  # -> data/details/<id>.json (skips existing)
-  python3 scripts/se_api.py status                                   # calls today, daily cap, cooldown
-  python3 scripts/se_api.py guard-tick [--kind search|details]       # before each MCP call; exit 2 = stop
-  python3 scripts/se_api.py guard-block <code>                       # after a 403/429 on the MCP path
+  .venv/bin/python scripts/se_api.py sweep [--out-dir data/sweep-pages]      # all pages -> page files, prints paths
+  .venv/bin/python scripts/se_api.py search --page N [--per-page 100] [--out FILE]
+  .venv/bin/python scripts/se_api.py details <id> [<id> ...]                  # -> data/details/<id>.json (skips existing)
+  .venv/bin/python scripts/se_api.py status                                   # calls today, daily cap, cooldown
+  .venv/bin/python scripts/se_api.py guard-tick [--kind search|details]       # before each MCP call; exit 2 = stop
+  .venv/bin/python scripts/se_api.py guard-block <code>                       # after a 403/429 on the MCP path
 """
 import json
 import os

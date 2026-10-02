@@ -11,5 +11,5 @@ __pycache__/
 .pytest_cache/
 .venv
 data/dashboard.html
-data/openigloo-*.json
-data/lp-*.json
+data/*.json
+!data/weights.json

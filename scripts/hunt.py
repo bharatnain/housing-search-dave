@@ -5,11 +5,12 @@ profile.yaml (scripts/doorman_profile.py); taste weights from data/weights.json.
 Subcommands:
   init                          create schema (idempotent)
   import-sweep <date> <json..>  import StreetEasy sweep page files (MCP or se_api output), diff against store
-  add-listings <json>           import other-portal listings (JSON array)
-  score-details <json>          score one saved get_rental_details output
+  add-listings <json>           import other-portal listings (JSON array, inline or a file)
+  score <json> [weights.json]   score one saved get_rental_details output; no store writes
+  score-details <json>          score one saved get_rental_details output and store it
   decide <id> pursue|pass       a dashboard tap: pursue -> pipeline 'shortlisted'; pass -> listing 'passed'
-  seed-pipeline <json>          upsert pipeline rows from a JSON array
-  add-feedback <json>           record viewing feedback
+  seed-pipeline <json>          upsert pipeline rows from a JSON array (inline or a file)
+  add-feedback <json>           record viewing feedback (inline or a file)
   feedback                      print all feedback
   nudges                        pipeline rows waiting on an agent for 48 h+
   digest                        print latest sweep diff + pipeline summary as JSON
@@ -99,6 +100,11 @@ def unit_key(address, unit):
     return re.sub(r"[^a-z0-9]+", "", s)
 
 
+def read_rows(arg):
+    """A JSON array given inline or as a file path."""
+    return json.loads(arg if arg.lstrip().startswith("[") else Path(arg).read_text())
+
+
 def net_effective(l):
     if (l.get("netEffectivePrice") or 0) > 0:
         return round(l["netEffectivePrice"])
@@ -166,6 +172,14 @@ def cmd_import_sweep(ran_at, paths, prof):
             net = net_effective(l)
             geo = l.get("geo") or {}
             row = conn.execute("SELECT price, status, exclude_reason FROM listings WHERE id=?", (lid,)).fetchone()
+            if row is None:
+                old = conn.execute("SELECT id FROM listings WHERE unit_key=?",
+                                   (unit_key(l["street"], l.get("unit")),)).fetchone()
+                if old:   # the unit was relisted under a new id: move the row and its history to it
+                    conn.execute("UPDATE listings SET id=?, source='streeteasy' WHERE id=?", (lid, old["id"]))
+                    conn.execute("UPDATE events SET listing_id=? WHERE listing_id=?", (lid, old["id"]))
+                    conn.execute("UPDATE pipeline SET listing_ref=? WHERE listing_ref=?", (lid, old["id"]))
+                    row = conn.execute("SELECT price, status, exclude_reason FROM listings WHERE id=?", (lid,)).fetchone()
             reason = exclusion_reason(prof, l["street"], net, l.get("bedrooms"), l.get("livingAreaSize"),
                                       l.get("leaseTermMonths"), l.get("buildingType"), geo.get("latitude"))
             # a walk-up exclusion comes from details (score-details), not the sweep: keep it
@@ -200,8 +214,8 @@ def cmd_import_sweep(ran_at, paths, prof):
                     # an old row is live again only once a sweep sees it
                     _event(conn, lid, ran_at, "confirmed", f"${l['price']} {l['street']} {l.get('unit') or ''}")
                     confirmed.append(brief)
-                if row["status"] == "excluded" and not reason:
-                    # was out of scope (e.g. over the cap before a price cut); it is back in scope now
+                if row["status"] in ("excluded", "gone") and not reason:
+                    # was out of scope (e.g. over the cap before a price cut) or gone; it is back now
                     _event(conn, lid, ran_at, "appeared", f"${l['price']} {l['street']} {l.get('unit') or ''}")
                     new.append(brief)
                 conn.execute(
@@ -235,7 +249,7 @@ def cmd_add_listings(path, prof):
     net_effective?, url?, src_label?, available_at?}."""
     conn = db()
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    rows = json.loads(Path(path).read_text())
+    rows = read_rows(path)
     added = updated = 0
     for r in rows:
         uk = unit_key(r["address"], r.get("unit"))
@@ -272,7 +286,7 @@ def cmd_seed_pipeline(path):
     for an update; stage is required for an insert."""
     conn = db()
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    rows = json.loads(Path(path).read_text())
+    rows = read_rows(path)
     cols = ["listing_ref", "address", "unit", "neighborhood", "price", "stage", "agent", "agent_email",
             "agency", "next_action", "next_action_at", "todo", "notes", "last_outreach_at"]
     for r in rows:
@@ -328,7 +342,7 @@ def cmd_add_feedback(path):
     (loved|maybe|no), liked?, disliked?, dealbreakers?, raw?, at?}."""
     conn = db()
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    rows = json.loads(Path(path).read_text())
+    rows = read_rows(path)
     for r in rows:
         assert r.get("verdict") in ("loved", "maybe", "no"), f"bad verdict {r.get('verdict')}"
         conn.execute(
@@ -357,8 +371,8 @@ DEFAULT_WEIGHTS = {
 }
 
 
-def load_weights():
-    p = DB.parent / "weights.json"
+def load_weights(p=None):
+    p = Path(p) if p else DB.parent / "weights.json"
     if p.exists():
         w = dict(DEFAULT_WEIGHTS)
         w.update({k: v for k, v in json.loads(p.read_text()).items()
@@ -444,6 +458,13 @@ def score_listing(d, W):
     return round(score, 1), stab, notes
 
 
+def cmd_score(path, weights=None):
+    """Score a saved get_rental_details output without touching the store (onboarding
+    calibration: pass the draft weights file)."""
+    score, stab, notes = score_listing(json.loads(Path(path).read_text()), load_weights(weights))
+    print(json.dumps({"score": score, "stab": stab, "notes": notes}))
+
+
 def cmd_score_details(path, prof):
     """Score a saved get_rental_details output, store score/stab, and apply the walk-up rule
     (no ELEVATOR amenity and a floor above search.exclude.max_walkup_floor -> excluded)."""
@@ -513,6 +534,8 @@ if __name__ == "__main__":
         cmd_import_sweep(sys.argv[2], sys.argv[3:], doorman_profile.load())
     elif cmd == "add-listings":
         cmd_add_listings(sys.argv[2], doorman_profile.load())
+    elif cmd == "score":
+        cmd_score(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
     elif cmd == "score-details":
         cmd_score_details(sys.argv[2], doorman_profile.load())
     elif cmd == "decide":

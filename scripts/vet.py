@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Doorman vetting engine: address -> building dossier from NYC open data.
 
-Usage: python3 scripts/vet.py "100 Example Street, Brooklyn"
+Usage: .venv/bin/python scripts/vet.py "100 Example Street, Brooklyn"
 Prints a JSON dossier + human-readable summary with red/yellow flags.
 """
 import json
@@ -38,14 +38,25 @@ def grade(open_c, open_b, units, flags, open_c_recent=None):
     return "clean"
 
 
-def vet(address):
-    if "," not in address:
-        address = address + ", Manhattan"
+def pick_feature(features, boroughs=None, near=None):
+    """A bare street address can match in several boroughs: keep the profile's boroughs,
+    then take the match nearest the listing's lat/lon when known."""
+    if boroughs:
+        inb = [f for f in features if str(f["properties"].get("borough", "")).lower() in boroughs]
+        features = inb or features
+    if near:
+        lat, lon = near
+        features = sorted(features, key=lambda f: (f["geometry"]["coordinates"][1] - lat) ** 2
+                          + (f["geometry"]["coordinates"][0] - lon) ** 2)
+    return features[0]
+
+
+def vet(address, boroughs=None, near=None):
     d = {"address_query": address}
     geo = get("https://geosearch.planninglabs.nyc/v2/search?text=" + urllib.parse.quote(address))
     if not geo.get("features"):
         return {"error": f"GeoSearch found nothing for {address!r}"}
-    f = geo["features"][0]
+    f = pick_feature(geo["features"], boroughs, near)
     props = f["properties"]
     pad = (props.get("addendum") or {}).get("pad") or {}
     bbl, bin_ = pad.get("bbl"), pad.get("bin")
@@ -53,6 +64,7 @@ def vet(address):
     # normalized street address as city datasets write it (e.g. "100 WEST 10 STREET")
     norm = f"{props.get('housenumber', '')} {props.get('street', '')}".upper().strip()
     d["normalized"] = norm
+    soql = norm.replace("'", "''")   # SoQL string literal ("ST MARK'S PL")
 
     two_years_ago = (date.today() - timedelta(days=730)).isoformat()
 
@@ -74,11 +86,11 @@ def vet(address):
     if norm:
         d["complaints_311_2y"] = soda(
             "erm2-nwe9", select="complaint_type,count(*) as n", group="complaint_type",
-            where=f"incident_address='{norm}' AND created_date>'{two_years_ago}'",
+            where=f"incident_address='{soql}' AND created_date>'{two_years_ago}'",
             order="n DESC", limit=10)
         d["evictions"] = soda(
             "6z8x-wfk4", select="executed_date,eviction_address,residential_commercial_ind",
-            where=f"eviction_address like '{norm}%'", limit=10)
+            where=f"eviction_address like '{soql}%'", limit=10)
     if bin_:
         d["dob_complaints"] = soda(
             "eabe-havv", select="complaint_category,count(*) as n",
@@ -107,11 +119,10 @@ def vet(address):
                if "HEAT" in c["complaint_type"].upper())
     if heat >= 3:
         flags.append(f"YELLOW: {heat} heat/hot-water 311 complaints in 2y")
-    # 2026-09-09: no-stairs is a hard rule (bad knee) — a building whose elevator keeps breaking is a stairs building
     elev = sum(int(c["n"]) for c in d.get("complaints_311_2y", [])
                if "ELEVATOR" in c["complaint_type"].upper())
     if elev >= 3:
-        flags.append(f"YELLOW: {elev} elevator 311 complaints in 2y (no-stairs rule)")
+        flags.append(f"YELLOW: {elev} elevator 311 complaints in 2y")
     lit_open = sum(int(x["n"]) for x in d.get("hpd_litigations", [])
                    if str(x.get("casestatus", "")).upper() not in ("CLOSED", ""))
     if lit_open:

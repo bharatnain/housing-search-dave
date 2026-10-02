@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the Doorman dashboard page from data/hunt.db and the profile -> data/dashboard.html.
 
-Usage: python3 scripts/hunt_dashboard.py   # then publish data/dashboard.html as an artifact
+Usage: .venv/bin/python scripts/hunt_dashboard.py   # then publish data/dashboard.html as an artifact
 The page's script writes to the artifact db: requests, decisions/<listing id> and feedback/<key>.
 """
 import html
@@ -451,7 +451,8 @@ def build(conn, prof):
     them_html = them_html or '<p class="empty">Nobody outstanding.</p>'
 
     prog = rows_for("shortlisted", "discovered", "applying", "applied", "decision")
-    prog_html = "".join(card(r, esc(r["stage"]), "muted") for r in prog)
+    prog_html = "".join(card(r, esc(r["stage"]), "muted",
+                             tail=debrief(r) if r["stage"] == "shortlisted" else "") for r in prog)
     dropped = rows_for("dropped")
     dropped_html = "".join(f'<div class="row slim"><div class="body"><div class="head">{head_(r)}</div>'
                            f'<p class="notes">{esc(r["notes"])}</p></div></div>' for r in dropped)
@@ -508,7 +509,7 @@ def build(conn, prof):
   <script>
 {JS}
   </script>
-  <footer>Criteria: {esc(criteria)}. {counts.get("excluded", 0)} listings excluded by those rules and not shown. Regenerate: <code>python3 scripts/hunt_dashboard.py</code>, then republish.</footer>
+  <footer>Criteria: {esc(criteria)}. {counts.get("excluded", 0)} listings excluded by those rules and not shown. Regenerate: <code>.venv/bin/python scripts/hunt_dashboard.py</code>, then republish.</footer>
 </div></body></html>"""
 
 

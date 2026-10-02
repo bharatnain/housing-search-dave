@@ -10,10 +10,10 @@ If a dashboard debrief exists (ArtifactData `read_db`, collection `feedback`, `p
 - Would they take it today at the asking rent? At what rent would they?
 - Anything that surprised them.
 
-Record with `python3 scripts/hunt.py add-feedback <json>` (verdict, liked, disliked, dealbreakers, raw). Set the listing's pipeline stage to `viewed` with `python3 scripts/hunt.py seed-pipeline <json>` (a one-row array: address, unit, `"stage": "viewed"`; other fields are left untouched). Mark the dashboard doc `processed: true` (ArtifactData update). Rebuild and republish the dashboard (`python3 scripts/hunt_dashboard.py`, republish with `capabilities` omitted).
+Record with `.venv/bin/python scripts/hunt.py add-feedback <json>` (verdict, liked, disliked, dealbreakers, raw). Set the listing's pipeline stage to `viewed` with `.venv/bin/python scripts/hunt.py seed-pipeline <json>` (a one-row array: address, unit, `"stage": "viewed"`; other fields are left untouched). Mark the dashboard doc `processed: true` (ArtifactData update). Rebuild and republish the dashboard (`.venv/bin/python scripts/hunt_dashboard.py`, republish with `capabilities` omitted).
 
 ## 2. Recalibrate
-Compare what they said with the model (`TASTE.md`, `data/weights.json`, the profile). Look for divergence, not confirmation, and read all feedback each time (`python3 scripts/hunt.py feedback`):
+Compare what they said with the model (`TASTE.md`, `data/weights.json`, the profile). Look for divergence, not confirmation, and read all feedback each time (`.venv/bin/python scripts/hunt.py feedback`):
 - A stated reason no weight captures: propose a new signal or rule.
 - A weighted factor they did not care about in person: propose lowering it.
 - A hard rule they bent, or a soft one they treated as hard: propose reclassifying.

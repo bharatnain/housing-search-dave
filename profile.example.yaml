@@ -1,6 +1,6 @@
 # Doorman profile. Onboarding ("set me up") writes profile.yaml for you; this file
 # documents every field. profile.yaml is gitignored: it never leaves your Mac.
-# Check a hand edit with: python3 scripts/doorman_profile.py check
+# Check a hand edit with: .venv/bin/python scripts/doorman_profile.py check
 
 household:
   name: "Alex"                 # used in the dashboard title and reports

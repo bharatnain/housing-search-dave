@@ -2,8 +2,8 @@
 """OpenIgloo listings scan (server-rendered pages; filters are app-only, so we
 crawl pages and filter locally against profile.yaml).
 
-Usage: python3 scripts/oi_scan.py [pages=40] [out.json]
-Writes data/openigloo-<date>.json, an array for: python3 scripts/hunt.py add-listings <file>
+Usage: .venv/bin/python scripts/oi_scan.py [pages=40] [out.json]
+Writes data/openigloo-<date>.json, an array for: .venv/bin/python scripts/hunt.py add-listings <file>
 """
 import json
 import re

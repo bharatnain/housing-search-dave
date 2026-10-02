@@ -5,11 +5,12 @@ Run on "set me up", "change my ...", or automatically when `profile.yaml` is mis
 Never ask for or store an SSN, income figures, bank details or passwords. If the user volunteers one, do not repeat or save it.
 
 ## Re-entry (profile already exists)
-A targeted change ("raise budget to 5,400", "add Astoria") edits that section of `profile.yaml` only: show the before/after, get a yes, write, then `python3 scripts/doorman_profile.py check`. Weight or taste changes need an explicit yes and a `TASTE.md` entry with the date and their words.
+A targeted change ("raise budget to 5,400", "add Astoria") edits that section of `profile.yaml` only: show the before/after, get a yes, write, then `.venv/bin/python scripts/doorman_profile.py check`. Weight or taste changes need an explicit yes and a `TASTE.md` entry with the date and their words.
 
 ## 1. Preflight
 Stop on any blocker and give a plain fix.
 - `python3 --version`; `ls .venv/bin/python` (if missing: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`).
+- `.venv/bin/python scripts/hunt.py init` (creates `data/hunt.db`; safe to re-run).
 - The StreetEasy MCP answers: call `mcp__streeteasy__list_areas`. If `streeteasy.source: api` is wanted instead, skip this and note it.
 - The Artifact tool is available (needed for the dashboard).
 
@@ -21,15 +22,14 @@ Stop on any blocker and give a plain fix.
 - **Building:** call `mcp__streeteasy__list_amenities`. Must-haves become `required_amenities` (sweep filters, so keep the list short); nice-to-haves become weights in `data/weights.json`. Explain the neutral defaults (floor, light, views, spacious/cramped, doorman, laundry, utilities included, rent stabilization, modern building) and let them raise, lower or zero any.
 - **Timing:** move window (two dates) and minimum lease months.
 - **StreetEasy source:** `mcp` (default) or `api`, and the daily call cap (default 120; explain it protects their account).
-- **Calibration:** ask for 3 to 5 StreetEasy listings they like or dislike (links or addresses). Fetch each with `mcp__streeteasy__get_rental_details` (run `python3 scripts/se_api.py guard-tick --kind details` before each; stop on exit 2; on any 403/429 run `python3 scripts/se_api.py guard-block <code>`). Save each to `data/details/<id>.json`, score with the draft weights, explain each score, and adjust the draft weights until the ranking matches their gut. Show the weight changes.
+- **Calibration:** ask for 3 to 5 StreetEasy listings they like or dislike (links or addresses). Fetch each with `mcp__streeteasy__get_rental_details` (run `.venv/bin/python scripts/se_api.py guard-tick --kind details` before each; stop on exit 2; on any 403/429 run `.venv/bin/python scripts/se_api.py guard-block <code>`). Save each to `data/details/<id>.json`, write the draft weights to `data/weights-draft.json`, score each with `.venv/bin/python scripts/hunt.py score data/details/<id>.json data/weights-draft.json` (no store writes), explain each score, and adjust the draft weights until the ranking matches their gut. Show the weight changes.
 
 ## 3. Confirm
-Show a readable summary of the proposed `profile.yaml`, `data/weights.json` and the `TASTE.md` seed (boundaries, commute anchors, deal-breakers, nice-to-haves). Write the files **only after the user says yes**. Then run `python3 scripts/doorman_profile.py check` and fix anything it reports (it names the field).
+Show a readable summary of the proposed `profile.yaml`, `data/weights.json` and the `TASTE.md` seed (boundaries, commute anchors, deal-breakers, nice-to-haves). Write the files **only after the user says yes**. Then run `.venv/bin/python scripts/doorman_profile.py check` and fix anything it reports (it names the field).
 
 ## 4. First run
-1. `python3 scripts/hunt.py init`.
-2. Sweep and import exactly as in `digest.md` section 2 (MCP path) or `python3 scripts/se_api.py sweep` (api path); then `hunt.py import-sweep`, details for in-budget listings, `hunt.py score-details`.
-3. `python3 scripts/vet_pipeline.py`.
-4. Portal poll: `python3 scripts/oi_scan.py` and `python3 scripts/lp_scan.py`, then `hunt.py add-listings` on each output (scripted portals only; browser portals are on request via "poll the portals").
-5. `python3 scripts/hunt_dashboard.py`, then publish `data/dashboard.html` as an artifact with `capabilities: {db: {}}`. Save the returned URL to `dashboard.artifact_url` in `profile.yaml` and re-run `doorman_profile.py check`.
+1. Sweep and import exactly as in `digest.md` section 2 (MCP path) or `.venv/bin/python scripts/se_api.py sweep` (api path); then `hunt.py import-sweep`, details for in-budget listings, `hunt.py score-details`.
+2. `.venv/bin/python scripts/vet_pipeline.py`.
+3. Portal poll: `.venv/bin/python scripts/oi_scan.py` and `.venv/bin/python scripts/lp_scan.py`, then `hunt.py add-listings` on each output (scripted portals only; browser portals are on request via "poll the portals").
+4. `.venv/bin/python scripts/hunt_dashboard.py`, then publish `data/dashboard.html` as an artifact with `capabilities: {db: {}}`. Save the returned URL to `dashboard.artifact_url` in `profile.yaml` and re-run `doorman_profile.py check`.
 6. Show a five-line "how to use Doorman" card: the five phrases (set me up, run the digest, debrief <address>, vet <address>, poll the portals), plus: tap pursue/pass and leave debriefs on the dashboard, Doorman acts on them at the next digest.
