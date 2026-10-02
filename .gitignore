@@ -1,0 +1,15 @@
+profile.yaml
+data/hunt.db*
+data/sweep-pages/
+data/details/
+logs/
+application-pack/
+.claude/settings.local.json
+.claude/board/
+.claude/team-profile.json
+__pycache__/
+.pytest_cache/
+.venv
+data/dashboard.html
+data/openigloo-*.json
+data/lp-*.json

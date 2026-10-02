@@ -1,0 +1,30 @@
+{
+ "rentalByListingId": {
+  "id": "1007",
+  "description": "Fourth-floor walk-up two bedroom.",
+  "propertyDetails": {
+   "address": {
+    "unit": "4R"
+   },
+   "bedroomCount": 2,
+   "livingAreaSize": 900,
+   "amenities": {
+    "list": [
+     "LAUNDRY"
+    ]
+   },
+   "features": {
+    "list": [],
+    "views": []
+   }
+  },
+  "pricing": {
+   "price": 3900
+  },
+  "propertyHistory": []
+ },
+ "buildingByRentalListingId": {
+  "yearBuilt": 1925,
+  "residentialUnitCount": 12
+ }
+}

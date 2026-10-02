@@ -1,0 +1,31 @@
+household:
+  name: "Sam"
+  people: 1
+  description: "solo renter"
+  pets: none
+search:
+  boroughs: [queens, manhattan]
+  areas:
+    - {name: ASTORIA, code: 401}
+    - {name: UPPER_WEST_SIDE, code: 137}
+  zips: ["11102", "11103", "10024", "10025"]
+  exclude: {north_of_street: 96, coops: true, max_walkup_floor: null}
+  bedrooms: {min: 0, max: 0}
+  max_gross_rent: 2900
+  max_net_rent: 2800
+  min_sqft: null
+  min_lease_months: 12
+  required_amenities: [ELEVATOR]
+move:
+  window: ["2026-12-01", "2026-12-15"]
+realtor_facts:
+  meets_income_40x: true
+  credit_700_plus: true
+  guarantor: false
+  phone: null
+streeteasy:
+  source: mcp
+  daily_cap: 120
+dashboard:
+  artifact_url: null
+backup_to_git: false

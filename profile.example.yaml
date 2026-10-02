@@ -1,0 +1,44 @@
+# Doorman profile. Onboarding ("set me up") writes profile.yaml for you; this file
+# documents every field. profile.yaml is gitignored: it never leaves your Mac.
+# Check a hand edit with: python3 scripts/doorman_profile.py check
+
+household:
+  name: "Alex"                 # used in the dashboard title and reports
+  people: 2                    # adults moving in
+  description: "couple"        # free text, used in realtor-facing summaries
+  pets: none                   # none | cat | dog | "other: <text>"
+
+search:
+  boroughs: [manhattan, brooklyn]
+  areas:                       # StreetEasy areas, resolved at onboarding with list_areas
+    - {name: EAST_VILLAGE, code: 117}
+    - {name: WILLIAMSBURG, code: 302}
+  zips: ["10003", "10009", "11211"]   # used by the portal scanners
+  exclude:
+    north_of_street: null      # e.g. 96 drops Manhattan addresses on East/West 97th St and up
+    coops: true                # co-op boards are slow and strict; true drops them
+    max_walkup_floor: 2        # null = any floor; walk-ups above this floor are dropped
+  bedrooms: {min: 1, max: 2}   # 0 = studio
+  max_gross_rent: 5200         # the sweep's price ceiling (asking rent)
+  max_net_rent: 5000           # net-effective cap after free months; must be <= gross
+  min_sqft: null               # only applied when a listing states its size
+  min_lease_months: 12
+  required_amenities: [ELEVATOR]   # become sweep filters; nice-to-haves go in data/weights.json
+
+move:
+  window: ["2026-12-01", "2026-12-15"]
+
+realtor_facts:                 # yes/no claims only; never figures or IDs
+  meets_income_40x: true
+  credit_700_plus: true
+  guarantor: false
+  phone: null                  # given to an agent only when they ask
+
+streeteasy:
+  source: mcp                  # mcp (StreetEasy MCP) | api (scripts/se_api.py)
+  daily_cap: 120               # StreetEasy calls per day, all scripts together
+
+dashboard:
+  artifact_url: null           # set on first publish
+
+backup_to_git: false           # true tracks data/hunt-backup.sql in git

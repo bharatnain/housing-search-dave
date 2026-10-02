@@ -1,0 +1,31 @@
+household:
+  name: "Jo and Lee"
+  people: 2
+  description: "couple"
+  pets: cat
+search:
+  boroughs: [brooklyn, queens]
+  areas:
+    - {name: PARK_SLOPE, code: 319}
+    - {name: ASTORIA, code: 401}
+  zips: ["11215", "11217", "11102"]
+  exclude: {north_of_street: null, coops: false, max_walkup_floor: 3}
+  bedrooms: {min: 2, max: 2}
+  max_gross_rent: 5600
+  max_net_rent: 5400
+  min_sqft: 750
+  min_lease_months: 12
+  required_amenities: []
+move:
+  window: ["2027-01-15", "2027-02-01"]
+realtor_facts:
+  meets_income_40x: true
+  credit_700_plus: true
+  guarantor: true
+  phone: null
+streeteasy:
+  source: api
+  daily_cap: 100
+dashboard:
+  artifact_url: null
+backup_to_git: false

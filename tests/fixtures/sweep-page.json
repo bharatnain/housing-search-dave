@@ -1,0 +1,189 @@
+{
+ "totalCount": 8,
+ "listings": [
+  {
+   "id": "1001",
+   "street": "30-12 21st Street",
+   "unit": "4B",
+   "neighborhood": "Astoria",
+   "bedrooms": 0,
+   "bathrooms": 1,
+   "price": 2400,
+   "livingAreaSize": 480,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1001",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.772,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1002",
+   "street": "200 West 99th Street",
+   "unit": "12C",
+   "neighborhood": "Upper West Side",
+   "bedrooms": 0,
+   "bathrooms": 1,
+   "price": 2600,
+   "livingAreaSize": null,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1002",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.796,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1003",
+   "street": "455 7th Avenue",
+   "unit": "3",
+   "neighborhood": "Park Slope",
+   "bedrooms": 2,
+   "bathrooms": 1,
+   "price": 5200,
+   "livingAreaSize": 800,
+   "monthsFree": 1,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1003",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.668,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1004",
+   "street": "88 Prospect Park West",
+   "unit": "5A",
+   "neighborhood": "Park Slope",
+   "bedrooms": 2,
+   "bathrooms": 1,
+   "price": 5300,
+   "livingAreaSize": 700,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1004",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.665,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1005",
+   "street": "31-05 Ditmars Blvd",
+   "unit": "2F",
+   "neighborhood": "Astoria",
+   "bedrooms": 0,
+   "bathrooms": 1,
+   "price": 2750,
+   "livingAreaSize": null,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "CO_OP",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1005",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.775,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1006",
+   "street": "245 East 98th Street",
+   "unit": "1A",
+   "neighborhood": "Flatbush",
+   "bedrooms": 2,
+   "bathrooms": 1,
+   "price": 4800,
+   "livingAreaSize": 850,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1006",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.66,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1007",
+   "street": "22-40 33rd Street",
+   "unit": "4R",
+   "neighborhood": "Astoria",
+   "bedrooms": 2,
+   "bathrooms": 1,
+   "price": 3900,
+   "livingAreaSize": 900,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1007",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.771,
+    "longitude": -73.95
+   }
+  },
+  {
+   "id": "1008",
+   "street": "150 West 85th Street",
+   "unit": "7D",
+   "neighborhood": "Upper West Side",
+   "bedrooms": 0,
+   "bathrooms": 1,
+   "price": 2850,
+   "livingAreaSize": null,
+   "monthsFree": 0,
+   "leaseTermMonths": 12,
+   "netEffectivePrice": 0,
+   "noFee": false,
+   "buildingType": "RENTAL",
+   "isNewDevelopment": false,
+   "availableAt": "2026-11-15",
+   "url": "https://streeteasy.com/rental/1008",
+   "sourceGroupLabel": "Example Realty",
+   "geo": {
+    "latitude": 40.786,
+    "longitude": -73.95
+   }
+  }
+ ]
+}

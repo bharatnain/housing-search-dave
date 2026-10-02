@@ -1,0 +1,28 @@
+{
+ "rentalByListingId": {
+  "id": "1003",
+  "description": "Rent-stabilized two bedroom in a classic brownstone.",
+  "propertyDetails": {
+   "address": {
+    "unit": "3"
+   },
+   "bedroomCount": 2,
+   "livingAreaSize": 800,
+   "amenities": {
+    "list": []
+   },
+   "features": {
+    "list": [],
+    "views": []
+   }
+  },
+  "pricing": {
+   "price": 5200
+  },
+  "propertyHistory": []
+ },
+ "buildingByRentalListingId": {
+  "yearBuilt": 1910,
+  "residentialUnitCount": 8
+ }
+}

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/*)",
+      "Bash(.venv/bin/python scripts/*)",
+      "Bash(ls *)",
+      "Bash(jq *)",
+      "mcp__streeteasy__*",
+      "Artifact",
+      "ArtifactData",
+      "ToolSearch"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git remote *)",
+      "Bash(git config *)"
+    ]
+  }
+}

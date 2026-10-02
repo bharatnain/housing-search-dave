@@ -1,0 +1,8 @@
+{
+  "_comment": "Taste weights for hunt.py score-details. Onboarding sets these; debriefs tune them and log why in TASTE.md.",
+  "floor_high": 3, "floor_mid": 2, "floor_low": 1,
+  "views_each": 1, "views_cap": 3, "light_language": 1,
+  "doorman": 1, "wd_inunit": 1, "laundry_bldg": 0.5,
+  "utilities_included": 1.5, "stab_strong": 3, "stab_weak": 1,
+  "low_floor_no_light_penalty": -1, "spacious": 1, "cramped_penalty": -1, "modern_building": 0.5
+}

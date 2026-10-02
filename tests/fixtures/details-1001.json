@@ -1,0 +1,32 @@
+{
+ "rentalByListingId": {
+  "id": "1001",
+  "description": "Bright studio with city views.",
+  "propertyDetails": {
+   "address": {
+    "unit": "4B"
+   },
+   "bedroomCount": 0,
+   "livingAreaSize": 480,
+   "amenities": {
+    "list": [
+     "ELEVATOR"
+    ]
+   },
+   "features": {
+    "list": [],
+    "views": [
+     "CITY"
+    ]
+   }
+  },
+  "pricing": {
+   "price": 2400
+  },
+  "propertyHistory": []
+ },
+ "buildingByRentalListingId": {
+  "yearBuilt": 2010,
+  "residentialUnitCount": 40
+ }
+}
